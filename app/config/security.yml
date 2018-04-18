@@ -11,35 +11,28 @@ security:
             id: fos_user.user_provider.username_email
 
     firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
         oauth_token:
             pattern:    ^/oauth/v2/token
             security:   false
-
         oauth_authorize:
             pattern:    ^/oauth/v2/auth
-            provider: fos_userbundle
+            anonymous: true
             form_login:
                 provider: fos_userbundle
-                check_path: /oauth/v2/auth/login_check
-                login_path: /oauth/v2/auth/login
-            # Add your favorite authentication process here
+                check_path: /oauth/v2/auth_login_check
+                login_path: /oauth/v2/auth_login
+            context: test_connect
+            logout_on_user_change: true
         api:
             pattern:    ^/api
             fos_oauth:  true
             stateless:  true
             anonymous:  false
-        # main:
-        #     pattern: ^/
-        #     form_login:
-        #         provider: fos_userbundle
-        #         csrf_token_generator: security.csrf.token_manager
-        #
-        #     logout:       true
-        #     anonymous:    true
 
     access_control:
         - { path: ^/api, roles: [ IS_AUTHENTICATED_FULLY ] }
-        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/oauth/v2/, role: IS_AUTHENTICATED_ANONYMOUSLY }

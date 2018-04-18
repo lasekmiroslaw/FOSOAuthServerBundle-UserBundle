@@ -13,6 +13,17 @@ class DefaultControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/');
 
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertContains('Welcome to Symfony', $crawler->filter('#container h1')->text());
+        $this->assertContains('Not secured', $crawler->filter('body')->text());
+    }
+
+    public function testApiOauth2Secured()
+    {
+        $client = static::createClient();
+
+        $crawler = $client->request('GET', '/api');
+        $data = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertEquals(401, $client->getResponse()->getStatusCode());
+        $this->assertEquals('OAuth2 authentication required', $data['error_description']);
     }
 }
